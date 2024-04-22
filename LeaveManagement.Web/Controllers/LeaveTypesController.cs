@@ -15,6 +15,7 @@ using LeaveManagement.Web.Constants;
 namespace LeaveManagement.Web.Controllers
 {
     [Authorize(Roles = Roles.Administrator)]
+
     public class LeaveTypesController : Controller
     {
         private readonly ILeaveTypeRepository leaveTypeRepository;
@@ -46,7 +47,6 @@ namespace LeaveManagement.Web.Controllers
             return View(leaveTypeVM);
         }
 
-        //[Authorize(Roles = "Administrator")]
         // GET: LeaveTypes/Create
         public IActionResult Create()
         {
@@ -58,7 +58,6 @@ namespace LeaveManagement.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //[Authorize(Roles = "Administrator")]
 
         public async Task<IActionResult> Create(LeaveTypeVM leaveTypeVM)
         {
@@ -71,8 +70,8 @@ namespace LeaveManagement.Web.Controllers
             return View(leaveTypeVM);
         }
 
-        //[Authorize(Roles = "Administrator")]
         // GET: LeaveTypes/Edit/5
+
         public async Task<IActionResult> Edit(int? id)
         {
             var leaveType = await leaveTypeRepository.GetAsync(id);
@@ -90,7 +89,6 @@ namespace LeaveManagement.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //[Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int id, LeaveTypeVM leaveTypeVM)
         {
             if (id != leaveTypeVM.Id)
@@ -124,7 +122,6 @@ namespace LeaveManagement.Web.Controllers
         // POST: LeaveTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        //[Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await leaveTypeRepository.DeleteAsync(id);

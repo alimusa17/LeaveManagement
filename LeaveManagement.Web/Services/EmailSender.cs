@@ -28,7 +28,7 @@ namespace LeaveManagement.Web.Services
 
             message.To.Add(new MailAddress(email));
 
-            using (var client = new SmtpClient(smtpServer, smtpPort))
+            using var client = new SmtpClient(smtpServer, smtpPort);
                 client.Send(message);
 
             return Task.CompletedTask;
