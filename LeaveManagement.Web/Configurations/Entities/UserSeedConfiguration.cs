@@ -20,7 +20,7 @@ namespace LeaveManagement.Web.Configurations.Entities
                     UserName = "admin@localhost.com",
                     Firstname = "System",
                     Lastname = "Admin",
-                    PasswordHash = hasher.HashPassword(null, "P@ssword99"),
+                    PasswordHash = hasher.HashPassword(null, "P@ssword1"),
                     EmailConfirmed = true
                 },
                 new Employee
