@@ -75,7 +75,6 @@ namespace LeaveManagement.Web.Controllers
         }
 
         // GET: LeaveTypes/Edit/5
-
         public async Task<IActionResult> Edit(int? id)
         {
             var leaveType = await leaveTypeRepository.GetAsync(id);

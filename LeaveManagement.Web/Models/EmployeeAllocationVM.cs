@@ -4,4 +4,5 @@
     {
         public List<LeaveAllocationVM> LeaveAllocations { get; set; }
     }
+
 }

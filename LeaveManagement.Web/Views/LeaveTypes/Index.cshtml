@@ -46,14 +46,13 @@
     <input type="hidden" id="leaveTypeId" name="Id" />
 </form>
 
-<form id="allocationFrom" asp-action="AllocateLeave">
+<form id="allocationForm" asp-action="AllocateLeave">
     <input type="hidden" id="leaveTypeIdAllocate" name="Id" />
 </form>
 
 @section Scripts {
     <script>
         $(function () {
-            $('.table').DataTable();
 
             $('.deleteBtn').click(function (e) {
                 swal({
@@ -75,7 +74,7 @@
             $('.allocateBtn').click(function (e) {
                 swal({
                     title: "Are you sure?",
-                    text: "Are you sure you want to allocate this leave to all employees?",
+                    text: "Are you sure you want to allocation this leave to all employees?",
                     icon: "warning",
                     buttons: true,
                     dangerMode: true
@@ -84,7 +83,7 @@
                         var btn = $(this);
                         var id = btn.data("id");
                         $('#leaveTypeIdAllocate').val(id);
-                        $('#allocationFrom').submit();
+                        $('#allocationForm').submit();
                     }
                 });
             });
