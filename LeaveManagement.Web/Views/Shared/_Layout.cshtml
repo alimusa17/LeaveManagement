@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.css" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/fontawesome.css" asp-append-version="true" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/LeaveManagement.Web.styles.css" asp-append-version="true" />
 </head>
@@ -26,7 +27,7 @@
                             <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="" asp-action="">Apply For Leave</a>
+                            <a class="nav-link text-white" asp-area="" asp-controller="LeaveRequests" asp-action="Create">Apply For Leave</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-controller="" asp-action="">My Leave</a>
@@ -71,9 +72,15 @@
     <script src="~/lib/sweetalert/sweetalert.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"</script>
     <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap5.js"</script>
+    <script src="http://code.jquery.com/ui/1.13.0/jquery-ui.css"></script>
     <script>
         $(function () {
             $('.table').DataTable();
+            $(".datepicker").datepicker({
+                dateFormat: "d MM, y"
+            });
+            $(".format").on("change", function () {
+                $(".datepicker").datepicker("option", "dateFormat", $(this).val());
         });
     </script>
     <script src="~/js/site.js" asp-append-version="true"></script>
