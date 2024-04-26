@@ -10,6 +10,7 @@ using LeaveManagement.Web.Models;
 using AutoMapper;
 using LeaveManagement.Web.Contracts;
 using Microsoft.AspNetCore.Authorization;
+using LeaveManagement.Web.Constants;
 
 namespace LeaveManagement.Web.Controllers
 {
@@ -19,36 +20,65 @@ namespace LeaveManagement.Web.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILeaveRequestRepository leaveRequestRepository;
 
-        public LeaveRequestsController(ApplicationDbContext context, ILeaveRequestRepository leaveRepository)
+        public LeaveRequestsController(ApplicationDbContext context, ILeaveRequestRepository leaveRequestRepository)
         {
             _context = context;
-            this.leaveRequestRepository = leaveRepository;
+            this.leaveRequestRepository = leaveRequestRepository;
         }
 
+        [Authorize(Roles = Roles.Administrator)]
         // GET: LeaveRequests
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.LeaveRequests.Include(l => l.LeaveType);
-            return View(await applicationDbContext.ToListAsync());
+            var model = await leaveRequestRepository.GetAdminLeaveRequestList();
+            return View(model);
+        }
+
+        public async Task<ActionResult> MyLeave()
+        {
+            var model = await leaveRequestRepository.GetMyLeaveDetails();
+            return View(model);
         }
 
         // GET: LeaveRequests/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.LeaveRequests == null)
+            var model = await leaveRequestRepository.GetLeaveRequestAsync(id);
+            if (model == null)
             {
                 return NotFound();
             }
+            return View(model);
+        }
 
-            var leaveRequest = await _context.LeaveRequests
-                .Include(l => l.LeaveType)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (leaveRequest == null)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ApproveRequest(int id, bool approved)
+        {
+            try
             {
-                return NotFound();
+                await leaveRequestRepository.ChangeApprovalStatus(id, approved);
             }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return RedirectToAction(nameof(Index));
+        }
 
-            return View(leaveRequest);
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cancel(int id)
+        {
+            try
+            {
+                await leaveRequestRepository.CancelLeaveRequest(id);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return RedirectToAction(nameof(MyLeave));
         }
 
         // GET: LeaveRequests/Create
@@ -72,15 +102,19 @@ namespace LeaveManagement.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    await leaveRequestRepository.CreateLeaveRequest(model);
-                    return RedirectToAction(nameof(Index));
+                    var isValidRequest = await leaveRequestRepository.CreateLeaveRequest(model);
+                    if (isValidRequest)
+                    {
+                        return RedirectToAction(nameof(MyLeave));
+                    }
+                    ModelState.AddModelError(string.Empty, "You have exceeded your allocation with this request.");
                 }
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, "An Error Has Occurred. Please Try Again Later");
             }
-            
+
             model.LeaveTypes = new SelectList(_context.LeaveTypes, "Id", "Name", model.LeaveTypeId);
             return View(model);
         }
@@ -88,7 +122,7 @@ namespace LeaveManagement.Web.Controllers
         // GET: LeaveRequests/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.LeaveRequests == null)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -141,7 +175,7 @@ namespace LeaveManagement.Web.Controllers
         // GET: LeaveRequests/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.LeaveRequests == null)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -161,24 +195,17 @@ namespace LeaveManagement.Web.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.LeaveRequests == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.LeaveRequests'  is null.");
-            }
+        {            
             var leaveRequest = await _context.LeaveRequests.FindAsync(id);
-            if (leaveRequest != null)
-            {
-                _context.LeaveRequests.Remove(leaveRequest);
-            }
-            
+            _context.LeaveRequests.Remove(leaveRequest);
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool LeaveRequestExists(int id)
         {
-          return (_context.LeaveRequests?.Any(e => e.Id == id)).GetValueOrDefault();
+            return _context.LeaveRequests.Any(e => e.Id == id);
         }
     }
 }
